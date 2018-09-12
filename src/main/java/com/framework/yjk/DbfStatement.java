@@ -1,0 +1,300 @@
+package com.framework.yjk;
+
+import com.framework.yjk.handler.SqlRequestHandler;
+import com.framework.yjk.handler.impl.DeleteSqlRequestHandler;
+import com.framework.yjk.handler.impl.InsertSqlRequestHandler;
+import com.framework.yjk.handler.impl.SelectSqlRequestHandler;
+import com.framework.yjk.handler.impl.UpdateSqlRequestHandler;
+
+import java.sql.*;
+
+/**
+ * @author yujiakui
+ * @version 1.0
+ * Email: jkyu@haiyi-info.com
+ * date: 2018/9/11 16:06
+ * description：
+ **/
+public class DbfStatement implements Statement {
+
+    /**
+     * 连接
+     */
+    private DbfConnection connection;
+
+    /**
+     * 上一个结果集合
+     */
+    protected ResultSet lastResultSet = null;
+
+    /**
+     * 结果集类型
+     */
+    private int resultSetType;
+
+    /**
+     * 构造函数
+     *
+     * @param connection
+     * @param resultSetType
+     */
+    public DbfStatement(DbfConnection connection, int resultSetType) {
+        this.connection = connection;
+        this.resultSetType = resultSetType;
+    }
+
+    @Override
+    public ResultSet executeQuery(String sql) throws SQLException {
+        // 解析sql
+        //net.sf.jsqlparser.statement.Statement sqlParserStatement = SqlParserUtil.parse(sql);
+
+        return null;
+    }
+
+    @Override
+    public int executeUpdate(String sql) throws SQLException {
+        return 0;
+    }
+
+    @Override
+    public void close() throws SQLException {
+
+    }
+
+    @Override
+    public int getMaxFieldSize() throws SQLException {
+        return 0;
+    }
+
+    @Override
+    public void setMaxFieldSize(int max) throws SQLException {
+
+    }
+
+    @Override
+    public int getMaxRows() throws SQLException {
+        return 0;
+    }
+
+    @Override
+    public void setMaxRows(int max) throws SQLException {
+
+    }
+
+    @Override
+    public void setEscapeProcessing(boolean enable) throws SQLException {
+
+    }
+
+    @Override
+    public int getQueryTimeout() throws SQLException {
+        return 0;
+    }
+
+    @Override
+    public void setQueryTimeout(int seconds) throws SQLException {
+
+    }
+
+    @Override
+    public void cancel() throws SQLException {
+
+    }
+
+    @Override
+    public SQLWarning getWarnings() throws SQLException {
+        return null;
+    }
+
+    @Override
+    public void clearWarnings() throws SQLException {
+
+    }
+
+    @Override
+    public void setCursorName(String name) throws SQLException {
+
+    }
+
+    @Override
+    public boolean execute(String sql) throws SQLException {
+
+        DbfJdbcDriver.writeLog("执行sql=" + sql);
+        String sqlUpperCase = sql.trim().toUpperCase();
+        SqlRequestHandler sqlRequestHandler = null;
+        if (sqlUpperCase.startsWith("SELECT")) {
+            // 查询语句
+            sqlRequestHandler = new SelectSqlRequestHandler();
+        } else if (sqlUpperCase.startsWith("INSERT")) {
+            sqlRequestHandler = new InsertSqlRequestHandler();
+        } else if (sqlUpperCase.startsWith("DELETE")) {
+            sqlRequestHandler = new DeleteSqlRequestHandler();
+        } else if (sqlUpperCase.startsWith("UPDATE")) {
+            sqlRequestHandler = new UpdateSqlRequestHandler();
+        }
+
+        if (null != sqlRequestHandler) {
+            sqlRequestHandler.handle(this, sql);
+        } else {
+            throw new RuntimeException("对应的sql语句类型暂时不支持" + sql);
+        }
+        return true;
+    }
+
+    @Override
+    public ResultSet getResultSet() throws SQLException {
+        return lastResultSet;
+    }
+
+    public void setLastResultSet(ResultSet lastResultSet) {
+        this.lastResultSet = lastResultSet;
+    }
+
+    @Override
+    public int getUpdateCount() throws SQLException {
+        return 0;
+    }
+
+    @Override
+    public boolean getMoreResults() throws SQLException {
+        return false;
+    }
+
+    @Override
+    public void setFetchDirection(int direction) throws SQLException {
+
+    }
+
+    @Override
+    public int getFetchDirection() throws SQLException {
+        return 0;
+    }
+
+    @Override
+    public void setFetchSize(int rows) throws SQLException {
+
+    }
+
+    @Override
+    public int getFetchSize() throws SQLException {
+        return 0;
+    }
+
+    @Override
+    public int getResultSetConcurrency() throws SQLException {
+        return 0;
+    }
+
+    @Override
+    public int getResultSetType() throws SQLException {
+        return 0;
+    }
+
+    @Override
+    public void addBatch(String sql) throws SQLException {
+
+    }
+
+    @Override
+    public void clearBatch() throws SQLException {
+
+    }
+
+    @Override
+    public int[] executeBatch() throws SQLException {
+        return new int[0];
+    }
+
+    @Override
+    public Connection getConnection() throws SQLException {
+        return this.connection;
+    }
+
+    @Override
+    public boolean getMoreResults(int current) throws SQLException {
+        return false;
+    }
+
+    @Override
+    public ResultSet getGeneratedKeys() throws SQLException {
+        return null;
+    }
+
+    @Override
+    public int executeUpdate(String sql, int autoGeneratedKeys) throws SQLException {
+        return 0;
+    }
+
+    @Override
+    public int executeUpdate(String sql, int[] columnIndexes) throws SQLException {
+        return 0;
+    }
+
+    @Override
+    public int executeUpdate(String sql, String[] columnNames) throws SQLException {
+        return 0;
+    }
+
+    @Override
+    public boolean execute(String sql, int autoGeneratedKeys) throws SQLException {
+        return false;
+    }
+
+    @Override
+    public boolean execute(String sql, int[] columnIndexes) throws SQLException {
+        return false;
+    }
+
+    @Override
+    public boolean execute(String sql, String[] columnNames) throws SQLException {
+        return false;
+    }
+
+    @Override
+    public int getResultSetHoldability() throws SQLException {
+        return 0;
+    }
+
+    @Override
+    public boolean isClosed() throws SQLException {
+        return false;
+    }
+
+    @Override
+    public void setPoolable(boolean poolable) throws SQLException {
+
+    }
+
+    @Override
+    public boolean isPoolable() throws SQLException {
+        return false;
+    }
+
+    @Override
+    public void closeOnCompletion() throws SQLException {
+
+    }
+
+    @Override
+    public boolean isCloseOnCompletion() throws SQLException {
+        return false;
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        return false;
+    }
+
+    public void setConnection(DbfConnection connection) {
+        this.connection = connection;
+    }
+
+    public void setResultSetType(int resultSetType) {
+        this.resultSetType = resultSetType;
+    }
+}
