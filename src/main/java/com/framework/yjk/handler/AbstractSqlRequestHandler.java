@@ -3,6 +3,7 @@ package com.framework.yjk.handler;
 import com.framework.yjk.DataReaderWriter;
 import com.framework.yjk.DbfConnection;
 import com.framework.yjk.DbfStatement;
+import com.framework.yjk.constants.ConnectionPropConstants;
 import com.framework.yjk.dbfio.DbfDataReaderWriter;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * @author yujiakui
@@ -43,11 +45,13 @@ public abstract class AbstractSqlRequestHandler implements SqlRequestHandler {
         Statement sqlStatement = getSqlStatementFromSql(sql);
         String tableName = getTableNameFromSql(sqlStatement);
         DbfConnection dbfConnection = (DbfConnection) dbfStatement.getConnection();
+        Properties connProp = dbfConnection.getConnProp();
         DataReaderWriter dataReaderWriter = new DbfDataReaderWriter(
-                dbfConnection.getFilePath() + tableName + ".dbf", null, "UTF-8");
+                dbfConnection.getFilePath() + tableName + ".dbf", null,
+                (String) connProp.get(ConnectionPropConstants.CHARSET_KEY));
 
         // 做真正的处理
-        doHandle(dbfStatement, dataReaderWriter, sqlStatement, sql,tableName);
+        doHandle(dbfStatement, dataReaderWriter, sqlStatement, sql, tableName);
 
         // 后处理
         afterHandler(dbfStatement, dataReaderWriter, sqlStatement, sql);
@@ -62,8 +66,8 @@ public abstract class AbstractSqlRequestHandler implements SqlRequestHandler {
      * @param sql
      */
     protected void afterHandler(DbfStatement dbfStatement,
-                              DataReaderWriter dataReaderWriter,
-                              Statement sqlStatement, String sql) throws SQLException {
+                                DataReaderWriter dataReaderWriter,
+                                Statement sqlStatement, String sql) throws SQLException {
     }
 
     /**
@@ -76,7 +80,7 @@ public abstract class AbstractSqlRequestHandler implements SqlRequestHandler {
     protected abstract void doHandle(DbfStatement dbfStatement,
                                      DataReaderWriter dataReaderWriter,
                                      Statement sqlStatement,
-                                     String sql,String tableName) throws SQLException;
+                                     String sql, String tableName) throws SQLException;
 
     /**
      * 从sql语句中获取对应的sql stament 对象

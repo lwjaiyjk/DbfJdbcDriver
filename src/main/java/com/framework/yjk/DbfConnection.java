@@ -54,7 +54,8 @@ public class DbfConnection implements Connection {
 
     @Override
     public PreparedStatement prepareStatement(String sql) throws SQLException {
-        return null;
+        PreparedStatement preparedStatement = new DbfStatement(this, ResultSet.TYPE_FORWARD_ONLY, sql);
+        return preparedStatement;
     }
 
     @Override

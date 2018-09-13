@@ -1,6 +1,7 @@
 package com.framework.yjk.sqlparser;
 
 import com.framework.yjk.DataReaderWriter;
+import com.google.common.collect.Lists;
 import lombok.Data;
 import net.sf.jsqlparser.expression.*;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -247,7 +249,29 @@ public class CommonWhereExpressionVisitor extends ExpressionVisitorAdapter {
         right.accept(this);
 
         Object rightValue = result;
-        result = Boolean.valueOf(Integer.valueOf(leftValue.toString()) > Integer.valueOf(rightValue.toString()));
+
+        compareObjValue(leftValue, rightValue, Lists.newArrayList(1));
+    }
+
+    /**
+     * 值比较
+     *
+     * @param leftValue
+     * @param rightValue
+     * @return
+     */
+    private void compareObjValue(Object leftValue, Object rightValue, List<Integer> trueVaues) {
+
+        if (null == leftValue && null == rightValue) {
+            result = Boolean.TRUE;
+        } else if ((null != leftValue && null == rightValue) ||
+                (null == leftValue && null != rightValue)) {
+            result = Boolean.FALSE;
+        } else {
+            String leftValueStr = leftValue.toString();
+            String rightValueStr = rightValue.toString();
+            result = trueVaues.contains(leftValueStr.compareTo(rightValueStr));
+        }
     }
 
     /**
@@ -266,7 +290,9 @@ public class CommonWhereExpressionVisitor extends ExpressionVisitorAdapter {
 
         Object rightValue = result;
 
-        result = Boolean.valueOf(Integer.valueOf(leftValue.toString()) >= Integer.valueOf(rightValue.toString()));
+        compareObjValue(leftValue, rightValue, Lists.newArrayList(1, 0));
+
+
     }
 
     /**
@@ -303,7 +329,8 @@ public class CommonWhereExpressionVisitor extends ExpressionVisitorAdapter {
 
         Object rightValue = result;
 
-        result = Boolean.valueOf(Integer.valueOf(leftValue.toString()) < Integer.valueOf(rightValue.toString()));
+        compareObjValue(leftValue, rightValue, Lists.newArrayList(-1));
+
     }
 
     /**
@@ -322,7 +349,8 @@ public class CommonWhereExpressionVisitor extends ExpressionVisitorAdapter {
 
         Object rightValue = result;
 
-        result = Boolean.valueOf(Integer.valueOf(leftValue.toString()) <= Integer.valueOf(rightValue.toString()));
+        compareObjValue(leftValue, rightValue, Lists.newArrayList(-1, 0));
+
     }
 
     /**
@@ -341,7 +369,7 @@ public class CommonWhereExpressionVisitor extends ExpressionVisitorAdapter {
 
         Object rightValue = result;
 
-        result = Boolean.valueOf(Integer.valueOf(leftValue.toString()) != Integer.valueOf(rightValue.toString()));
+        compareObjValue(leftValue, rightValue, Lists.newArrayList(-1, 1));
     }
 
     /**
