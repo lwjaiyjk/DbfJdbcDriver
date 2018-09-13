@@ -1,6 +1,7 @@
 package com.framework.yjk.sqlparser;
 
 import com.framework.yjk.DataReaderWriter;
+import com.framework.yjk.util.ObjectCompareUtil;
 import com.google.common.collect.Lists;
 import lombok.Data;
 import net.sf.jsqlparser.expression.*;
@@ -8,6 +9,7 @@ import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
 import net.sf.jsqlparser.expression.operators.relational.*;
 import net.sf.jsqlparser.schema.Column;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -268,9 +270,7 @@ public class CommonWhereExpressionVisitor extends ExpressionVisitorAdapter {
                 (null == leftValue && null != rightValue)) {
             result = Boolean.FALSE;
         } else {
-            String leftValueStr = leftValue.toString();
-            String rightValueStr = rightValue.toString();
-            result = trueVaues.contains(leftValueStr.compareTo(rightValueStr));
+            result = trueVaues.contains(ObjectCompareUtil.compare(leftValue, rightValue));
         }
     }
 

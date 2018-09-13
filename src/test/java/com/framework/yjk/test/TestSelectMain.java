@@ -49,11 +49,11 @@ public class TestSelectMain {
         //Class.forName("com.haiyi.framework.dbf.DbfJdbcDriver");
         DbfJdbcDriver.registDriver();
         Connection connection = DriverManager.getConnection("jdbc:yjk:dbf:src/test/resources");
-        String query = "SELECT *  FROM zq_order where rec_num = ? and rec_date > ? limit 1";
+        String query = "SELECT *  FROM zq_order where rec_num > ?  and rec_num < 1000 and rec_date > ? limit 2";
         DbfStatement statement = (DbfStatement) connection.prepareStatement(query);
         /*String query = "SELECT rec_num as A  FROM zq_order where rec_num = 2000000 and  STOCK_CODE = '500500' LIMIT 1";*/
-        statement.setInt(0, 6);
-        statement.setString(1,"20180627");
+        statement.setInt(1, 6);
+        statement.setString(2,"20180627");
         statement.executeQuery();
         ResultSet resultSet = statement.getResultSet();
         System.out.println(resultSet);

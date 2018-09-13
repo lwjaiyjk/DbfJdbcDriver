@@ -415,7 +415,7 @@ public class DbfStatement implements PreparedStatement {
      * @param value
      */
     private void setPlaceHolderParam(int pos, String value) {
-        int placeHolderPos = this.placeholderPos.get(pos);
+        int placeHolderPos = this.placeholderPos.get(pos-1);
         this.placeholderSepSqlArrays[placeHolderPos] = value;
         this.sql = StringUtils.join(this.placeholderSepSqlArrays);
     }
