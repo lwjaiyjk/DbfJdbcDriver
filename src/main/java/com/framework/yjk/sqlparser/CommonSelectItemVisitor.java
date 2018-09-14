@@ -4,6 +4,7 @@ import com.framework.yjk.DataReaderWriter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.AllColumns;
@@ -25,12 +26,9 @@ import java.util.Map;
  * description：通用select item 访问器
  **/
 @Data
+@Slf4j
 public class CommonSelectItemVisitor extends SelectItemVisitorAdapter {
 
-    /**
-     * 日志
-     */
-    private final static Logger LOGGER = LoggerFactory.getLogger(CommonSelectItemVisitor.class);
 
     /**
      * 字段信息长度
@@ -58,7 +56,7 @@ public class CommonSelectItemVisitor extends SelectItemVisitorAdapter {
 
     @Override
     public void visit(AllColumns columns) {
-        LOGGER.info("MySelectItemVisitor visit AllColumns={}", columns);
+        log.debug("MySelectItemVisitor visit AllColumns={}", columns);
         fieldCntInfos.clear();
         try {
             for (String colName : dataReaderWriter.getColumnNames()) {
@@ -68,19 +66,19 @@ public class CommonSelectItemVisitor extends SelectItemVisitorAdapter {
                 fieldCntInfos.add(fieldCntInfo);
             }
         } catch (SQLException e) {
-            LOGGER.error("MySelectItemVisitor visit AllColumns SQLException={}", e);
+            log.error("MySelectItemVisitor visit AllColumns SQLException={}", e);
             throw new RuntimeException("MySelectItemVisitor visit AllColumns", e);
         }
     }
 
     @Override
     public void visit(AllTableColumns columns) {
-        LOGGER.info("MySelectItemVisitor visit AllTableColumns={}", columns);
+        log.debug("MySelectItemVisitor visit AllTableColumns={}", columns);
     }
 
     @Override
     public void visit(SelectExpressionItem item) {
-        LOGGER.info("MySelectItemVisitor visit SelectExpressionItem={}", item);
+        log.debug("MySelectItemVisitor visit SelectExpressionItem={}", item);
         fieldCntInfos.clear();
         colAliasNameMap.clear();
         Object[] fieldCntInfo = new Object[FIELD_INFO_LENGTH];

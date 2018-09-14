@@ -5,6 +5,7 @@ import com.framework.yjk.sqlparser.CommonWhereExpressionVisitor;
 import com.framework.yjk.util.StringConverter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.Limit;
@@ -32,12 +33,8 @@ import java.util.Map;
  * date: 2018/9/11 16:08
  * description：
  **/
+@Slf4j
 public class DbfResultSet implements ResultSet {
-
-    /**
-     * 日志
-     */
-    private final static Logger LOGGER = LoggerFactory.getLogger(DbfResultSet.class);
 
     /**
      * 默认列的size
@@ -152,7 +149,7 @@ public class DbfResultSet implements ResultSet {
             colAliasNameMap = Maps.newHashMap();
             for (SelectItem selectItem : selectItems) {
                 selectItem.accept(mySelectItemVisitor);
-                LOGGER.info("select Item--->{}", selectItem);
+                log.debug("select Item--->{}", selectItem);
                 // 设置queryResultValue
                 queryReturnColInfos.addAll(mySelectItemVisitor.getFieldCntInfos());
                 colAliasNameMap.putAll(mySelectItemVisitor.getColAliasNameMap());
@@ -172,9 +169,10 @@ public class DbfResultSet implements ResultSet {
 
         CommonWhereExpressionVisitor whereExpressionVisitor = new CommonWhereExpressionVisitor();
         // sql语句解析
-        Expression expression = whereExpression;
-        whereExpressionVisitor.setExpression(expression);
-        whereExpressionVisitor.setDataReaderWriter(this.reader);
+        if (null != whereExpression) {
+            whereExpressionVisitor.setExpression(whereExpression);
+            whereExpressionVisitor.setDataReaderWriter(this.reader);
+        }
 
         long startRowNum = 0;
         int totalRecordNum = reader.getRecordCount();
@@ -186,14 +184,14 @@ public class DbfResultSet implements ResultSet {
                 startRowNum = (long) whereExpressionVisitor.getResult();
             }
             Expression maxReturnRecordNumExp = limit.getRowCount();
-            if(null != maxReturnRecordNumExp) {
+            if (null != maxReturnRecordNumExp) {
                 maxReturnRecordNumExp.accept(whereExpressionVisitor);
                 maxReturnRecordNum = (long) whereExpressionVisitor.getResult();
             }
         }
 
         if (startRowNum > totalRecordNum) {
-            LOGGER.error("sql请求开始的行数{}大于表中总的记录行数{},sql={}", startRowNum, totalRecordNum, sql);
+            log.error("sql请求开始的行数{}大于表中总的记录行数{},sql={}", startRowNum, totalRecordNum, sql);
             throw new RuntimeException("sql请求开始的行数大于表中总的记录行数");
         }
         // 设置从哪一行开始
@@ -204,11 +202,14 @@ public class DbfResultSet implements ResultSet {
         while (reader.next() && recordCount <= maxReturnRecordNum) {
             Record curRecord = reader.getCurRecord();
             if (!curRecord.isMarkedDeleted()) {
-                LOGGER.info("dbf 读取结果{}", reader.getRecordMap());
-                whereExpressionVisitor.setValueMaps(reader.getRecordMap());
-                // where 条件
-                expression.accept(whereExpressionVisitor);
-                Boolean filterFlag = (Boolean) whereExpressionVisitor.getResult();
+                log.debug("dbf 读取结果{}", reader.getRecordMap());
+                Boolean filterFlag = true;
+                if (null != whereExpression) {
+                    whereExpressionVisitor.setValueMaps(reader.getRecordMap());
+                    // where 条件
+                    whereExpression.accept(whereExpressionVisitor);
+                    filterFlag = (Boolean) whereExpressionVisitor.getResult();
+                }
                 if (filterFlag) {
                     // 将记录保存到结果集合中
                     putRecordInResultSet();

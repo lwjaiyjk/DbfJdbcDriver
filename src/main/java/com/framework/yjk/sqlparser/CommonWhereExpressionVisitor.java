@@ -4,6 +4,7 @@ import com.framework.yjk.DataReaderWriter;
 import com.framework.yjk.util.ObjectCompareUtil;
 import com.google.common.collect.Lists;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.*;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
@@ -25,12 +26,8 @@ import java.util.Map;
  * description：
  **/
 @Data
+@Slf4j
 public class CommonWhereExpressionVisitor extends ExpressionVisitorAdapter {
-
-    /**
-     * 日志
-     */
-    private final static Logger LOGGER = LoggerFactory.getLogger(CommonWhereExpressionVisitor.class);
 
     private Object result;
     private DataReaderWriter dataReaderWriter;
@@ -54,7 +51,7 @@ public class CommonWhereExpressionVisitor extends ExpressionVisitorAdapter {
         try {
             valueMaps = dataReaderWriter.getRecordMap();
         } catch (SQLException e) {
-            LOGGER.error("MyWhereExpressionVisitor SQLException={}", e);
+            log.error("MyWhereExpressionVisitor SQLException={}", e);
             throw new RuntimeException("MyWhereExpressionVisitor SQLException", e);
         }
     }

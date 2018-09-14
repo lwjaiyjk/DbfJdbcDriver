@@ -1,11 +1,14 @@
 package com.framework.yjk.test;
 
+import com.framework.yjk.DbfConnection;
 import com.framework.yjk.DbfJdbcDriver;
 import com.framework.yjk.DbfStatement;
+import com.framework.yjk.constants.ConnectionPropConstants;
 import org.junit.Test;
 
 import java.io.PrintWriter;
 import java.sql.*;
+import java.util.Properties;
 
 /**
  * @author yujiakui
@@ -21,10 +24,13 @@ public class TestSelectMain {
         DriverManager.setLogWriter(new PrintWriter(System.out, true));
         //Class.forName("com.haiyi.framework.dbf.DbfJdbcDriver");
         DbfJdbcDriver.registDriver();
-        Connection connection = DriverManager.getConnection("jdbc:yjk:dbf:src/test/resources");
+        Properties properties = new Properties();
+        properties.setProperty(ConnectionPropConstants.CHARSET_KEY,"GBK");
+        Connection connection = DriverManager.
+                getConnection("jdbc:yjk:dbf:src/test/resources",properties);
         DbfStatement statement = (DbfStatement) connection.createStatement();
         /*String query = "SELECT rec_num as A  FROM zq_order where rec_num = 2000000 and  STOCK_CODE = '500500' LIMIT 1";*/
-        String query = "SELECT *  FROM zq_order where rec_num = 3 ";
+        String query = "SELECT *  FROM zq_feedback1";
         statement.execute(query);
         ResultSet resultSet = statement.getResultSet();
         System.out.println(resultSet);

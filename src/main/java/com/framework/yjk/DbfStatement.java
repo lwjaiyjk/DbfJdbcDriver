@@ -6,6 +6,7 @@ import com.framework.yjk.handler.impl.InsertSqlRequestHandler;
 import com.framework.yjk.handler.impl.SelectSqlRequestHandler;
 import com.framework.yjk.handler.impl.UpdateSqlRequestHandler;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,12 +26,8 @@ import java.util.List;
  * date: 2018/9/11 16:06
  * description：
  **/
+@Slf4j
 public class DbfStatement implements PreparedStatement {
-
-    /**
-     * 日志
-     */
-    private final static Logger LOGGER = LoggerFactory.getLogger(DbfStatement.class);
 
     /**
      * sql语句对应的占位符号
@@ -201,6 +198,7 @@ public class DbfStatement implements PreparedStatement {
     public boolean execute(String sql) throws SQLException {
 
         DbfJdbcDriver.writeLog("执行sql=" + sql);
+        log.info("查询对应的sql语句{}",sql);
         String sqlUpperCase = sql.trim().toUpperCase();
         SqlRequestHandler sqlRequestHandler = null;
         if (sqlUpperCase.startsWith("SELECT")) {
@@ -389,7 +387,6 @@ public class DbfStatement implements PreparedStatement {
 
     @Override
     public ResultSet executeQuery() throws SQLException {
-        LOGGER.info("查询对应的sql语句{}",sql);
         this.execute(this.sql);
         return this.lastResultSet;
     }

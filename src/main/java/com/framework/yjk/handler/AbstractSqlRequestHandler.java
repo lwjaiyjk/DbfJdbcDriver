@@ -5,6 +5,7 @@ import com.framework.yjk.DbfConnection;
 import com.framework.yjk.DbfStatement;
 import com.framework.yjk.constants.ConnectionPropConstants;
 import com.framework.yjk.dbfio.DbfDataReaderWriter;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
@@ -28,12 +29,8 @@ import java.util.Properties;
  * date: 2018/9/11 16:47
  * description：抽象sql请求处理
  **/
+@Slf4j
 public abstract class AbstractSqlRequestHandler implements SqlRequestHandler {
-
-    /**
-     * 日志
-     */
-    protected final static Logger LOGGER = LoggerFactory.getLogger(AbstractSqlRequestHandler.class);
 
     /**
      * 表名获取器
@@ -113,7 +110,7 @@ public abstract class AbstractSqlRequestHandler implements SqlRequestHandler {
         } else if (statement instanceof Update) {
             tablenames = tablesNamesFinder.getTableList((Update) statement);
         } else {
-            LOGGER.error("对应的statement={}不识别", statement);
+            log.error("对应的statement={}不识别", statement);
             throw new RuntimeException("对应的statement不识别" + statement);
         }
 

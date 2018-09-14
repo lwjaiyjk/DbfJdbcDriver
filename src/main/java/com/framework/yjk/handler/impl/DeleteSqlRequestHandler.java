@@ -4,6 +4,7 @@ import com.framework.yjk.DataReaderWriter;
 import com.framework.yjk.DbfStatement;
 import com.framework.yjk.handler.AbstractSqlRequestHandler;
 import com.framework.yjk.sqlparser.CommonWhereExpressionVisitor;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.delete.Delete;
@@ -17,6 +18,7 @@ import java.sql.SQLException;
  * date: 2018/9/12 8:37
  * description：删除对应的sql请求处理
  **/
+@Slf4j
 public class DeleteSqlRequestHandler extends AbstractSqlRequestHandler {
 
     @Override
@@ -35,7 +37,7 @@ public class DeleteSqlRequestHandler extends AbstractSqlRequestHandler {
         int delRecordNum = 0;
         // 通过读取dbf文件获得对应的记录
         while (dataReaderWriter.next()) {
-            LOGGER.info("dbf 读取结果{}", dataReaderWriter.getRecordMap());
+            log.debug("dbf 读取结果{}", dataReaderWriter.getRecordMap());
             whereExpressionVisitor.setValueMaps(dataReaderWriter.getRecordMap());
             // where 条件
             expression.accept(whereExpressionVisitor);
@@ -49,6 +51,6 @@ public class DeleteSqlRequestHandler extends AbstractSqlRequestHandler {
 
         }
 
-        LOGGER.info("sql={}删除记录个数{}", sql, delRecordNum);
+        log.info("sql={}删除记录个数{}", sql, delRecordNum);
     }
 }

@@ -29,11 +29,7 @@ public class InsertSqlRequestHandler extends AbstractSqlRequestHandler {
         insertSql.accept(myStatementVisitor);
 
         Record record = new Record(myStatementVisitor.getInsertParseResultMap());
-
-        System.out.println("插入前对应的记录条数" + dataReaderWriter.getRecordCount());
         dataReaderWriter.insertRecord(record);
-
-        System.out.println("插入之后对应的记录条数" + dataReaderWriter.getRecordCount());
     }
 
     @Override
