@@ -1,8 +1,10 @@
 package com.framework.yjk.dbfio;
 
 import com.framework.yjk.DataReaderWriter;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import nl.knaw.dans.common.dbflib.*;
+import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -40,6 +42,10 @@ public class DbfDataReaderWriter implements DataReaderWriter {
     private String tableAlias;
     private List<Field> dbfFields;
     /**
+     * 字段名称映射，其中key为字段名称的大写，value是原始的字段名称
+     */
+    private Map<String, String> fieldNameMap;
+    /**
      * 当前记录
      */
     private Record curRecord;
@@ -54,6 +60,10 @@ public class DbfDataReaderWriter implements DataReaderWriter {
             }
             dbfTable.open();
             dbfFields = dbfTable.getFields();
+            fieldNameMap = Maps.newHashMap();
+            for (Field colField : dbfFields) {
+                fieldNameMap.put(colField.getName().toUpperCase(), colField.getName());
+            }
             rowNo = -1;
             this.tableAlias = tableAlias;
             recordCount = dbfTable.getRecordCount();
@@ -238,5 +248,9 @@ public class DbfDataReaderWriter implements DataReaderWriter {
     @Override
     public String getTableAlias() {
         return tableAlias;
+    }
+
+    public Map<String, String> getFieldNameMap() {
+        return fieldNameMap;
     }
 }

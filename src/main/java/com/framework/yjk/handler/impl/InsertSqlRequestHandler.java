@@ -2,6 +2,7 @@ package com.framework.yjk.handler.impl;
 
 import com.framework.yjk.DataReaderWriter;
 import com.framework.yjk.DbfStatement;
+import com.framework.yjk.dbfio.DbfDataReaderWriter;
 import com.framework.yjk.handler.AbstractSqlRequestHandler;
 import com.framework.yjk.sqlparser.CommonStatementVisitor;
 import net.sf.jsqlparser.statement.Statement;
@@ -21,10 +22,10 @@ public class InsertSqlRequestHandler extends AbstractSqlRequestHandler {
     @Override
     protected void doHandle(DbfStatement dbfStatement,
                             DataReaderWriter dataReaderWriter,
-                            Statement sqlStatement, String sql,String tableName) throws SQLException {
+                            Statement sqlStatement, String sql, String tableName) throws SQLException {
         Insert insertSql = (Insert) sqlStatement;
 
-        CommonStatementVisitor myStatementVisitor = new CommonStatementVisitor();
+        CommonStatementVisitor myStatementVisitor = new CommonStatementVisitor((DbfDataReaderWriter) dataReaderWriter);
         insertSql.accept(myStatementVisitor);
 
         Record record = new Record(myStatementVisitor.getInsertParseResultMap());

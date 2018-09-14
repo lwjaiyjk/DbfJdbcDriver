@@ -21,9 +21,9 @@ public class TestUpdateMain {
         DriverManager.setLogWriter(new PrintWriter(System.out, true));
         //Class.forName("com.haiyi.framework.dbf.DbfJdbcDriver");
         DbfJdbcDriver.registDriver();
-        Connection connection = DriverManager.getConnection("jdbc:yjk:dbf:src/test/resources");
+        Connection connection = DriverManager.getConnection("jdbc:yjk:dbf:D:/temp");
         DbfStatement statement = (DbfStatement) connection.createStatement();
-        String query = "update zq_order set order_type = 2 where rec_num = 6";
+        String query = "update zq_order set rec_num = 1 where rec_num = 3";
         statement.execute(query);
 
     }

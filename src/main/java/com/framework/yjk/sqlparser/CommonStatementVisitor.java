@@ -1,5 +1,7 @@
 package com.framework.yjk.sqlparser;
 
+import com.framework.yjk.DataReaderWriter;
+import com.framework.yjk.dbfio.DbfDataReaderWriter;
 import com.google.common.collect.Maps;
 import lombok.Data;
 import net.sf.jsqlparser.expression.Expression;
@@ -25,20 +27,31 @@ public class CommonStatementVisitor extends StatementVisitorAdapter {
     /**
      * 插入解析映射
      */
-    private Map<String,Value> insertParseResultMap;
+    private Map<String, Value> insertParseResultMap;
+
+    /**
+     * 数读写
+     */
+    private DbfDataReaderWriter dataReaderWriter;
+
+    public CommonStatementVisitor(DbfDataReaderWriter dataReaderWriter) {
+        this.dataReaderWriter = dataReaderWriter;
+    }
 
     @Override
     public void visit(Insert insert) {
         List<Column> columns = insert.getColumns();
-        ExpressionList itemsList = (ExpressionList)insert.getItemsList();
+        ExpressionList itemsList = (ExpressionList) insert.getItemsList();
         List<Expression> expressions = itemsList.getExpressions();
         insertParseResultMap = Maps.newHashMap();
         CommonInsertExpressionVisitor myInsertExpressionVisitor = new CommonInsertExpressionVisitor();
-        for(int i=0;i<columns.size();i++){
+        Map<String, String> colNameMap = dataReaderWriter.getFieldNameMap();
+        for (int i = 0; i < columns.size(); i++) {
             Column tempCol = columns.get(i);
             Expression expression = expressions.get(i);
             expression.accept(myInsertExpressionVisitor);
-            insertParseResultMap.put(tempCol.getColumnName().toLowerCase(),myInsertExpressionVisitor.getResult());
+            insertParseResultMap.put(colNameMap.get(tempCol.getColumnName().toUpperCase()),
+                    myInsertExpressionVisitor.getResult());
         }
 
         System.out.println(insertParseResultMap);

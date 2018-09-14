@@ -50,6 +50,7 @@ public class TestSelectMain {
         DbfJdbcDriver.registDriver();
         Connection connection = DriverManager.getConnection("jdbc:yjk:dbf:src/test/resources");
         String query = "SELECT *  FROM zq_order where rec_num > ?  and rec_num < 1000 and rec_date > ? limit 2";
+        //String query = "select * from zq_feedback where  REC_NUM > 10  and  REC_NUM<10000000  and  REC_DATE='20180912'";
         DbfStatement statement = (DbfStatement) connection.prepareStatement(query);
         /*String query = "SELECT rec_num as A  FROM zq_order where rec_num = 2000000 and  STOCK_CODE = '500500' LIMIT 1";*/
         statement.setInt(1, 6);

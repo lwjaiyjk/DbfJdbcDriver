@@ -2,6 +2,7 @@ package com.framework.yjk.util;
 
 import org.apache.commons.collections.comparators.ComparableComparator;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
 
 /**
@@ -33,14 +34,14 @@ public class ObjectCompareUtil {
         } else {
             // 左右值都不是空
             Comparator mycmp = ComparableComparator.getInstance();
-            if (leftValue instanceof Integer){
-                long tempLeftValue = (int)leftValue;
-                leftValue = tempLeftValue;
+            if (leftValue instanceof Number || rightValue instanceof Number) {
+                BigDecimal leftBigDecimal = new BigDecimal(leftValue.toString());
+                BigDecimal rightBigDecimal = new BigDecimal(rightValue.toString());
+                leftValue = leftBigDecimal;
+                rightValue = rightBigDecimal;
+
             }
-            if(rightValue instanceof Integer){
-                long tempRightValue = (int)rightValue;
-                rightValue = tempRightValue;
-            }
+
             int compareValue = mycmp.compare(leftValue, rightValue);
             if (compareValue > 0) {
                 return 1;

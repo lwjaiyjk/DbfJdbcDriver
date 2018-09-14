@@ -180,8 +180,16 @@ public class DbfResultSet implements ResultSet {
         int totalRecordNum = reader.getRecordCount();
         long maxReturnRecordNum = totalRecordNum;
         if (null != limit) {
-            startRowNum = limit.getOffset();
-            maxReturnRecordNum = limit.getRowCount();
+            Expression startRowNumExp = limit.getOffset();
+            if (null != startRowNumExp) {
+                startRowNumExp.accept(whereExpressionVisitor);
+                startRowNum = (long) whereExpressionVisitor.getResult();
+            }
+            Expression maxReturnRecordNumExp = limit.getRowCount();
+            if(null != maxReturnRecordNumExp) {
+                maxReturnRecordNumExp.accept(whereExpressionVisitor);
+                maxReturnRecordNum = (long) whereExpressionVisitor.getResult();
+            }
         }
 
         if (startRowNum > totalRecordNum) {

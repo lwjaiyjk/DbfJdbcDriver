@@ -513,7 +513,8 @@ public class DbfStatement implements PreparedStatement {
 
     @Override
     public boolean execute() throws SQLException {
-        return false;
+
+        return this.execute(this.sql);
     }
 
     @Override
