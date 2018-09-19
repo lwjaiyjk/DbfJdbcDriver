@@ -195,7 +195,9 @@ public class DbfResultSet implements ResultSet {
             throw new RuntimeException("sql请求开始的行数大于表中总的记录行数");
         }
         // 设置从哪一行开始
-        reader.skip((int) startRowNum);
+        if (startRowNum > 0) {
+            reader.skip((int) startRowNum);
+        }
         int recordCount = 1;
         int curRecordNum = (int) startRowNum;
         // 通过读取dbf文件获得对应的记录
