@@ -2,6 +2,7 @@ package com.framework.yjk.handler.impl;
 
 import com.framework.yjk.DataReaderWriter;
 import com.framework.yjk.DbfStatement;
+import com.framework.yjk.dbfio.DbfDataReaderWriter;
 import com.framework.yjk.handler.AbstractSqlRequestHandler;
 import com.framework.yjk.sqlparser.CommonInsertExpressionVisitor;
 import com.framework.yjk.sqlparser.CommonWhereExpressionVisitor;
@@ -36,22 +37,29 @@ public class UpdateSqlRequestHandler extends AbstractSqlRequestHandler {
 
         Update updateSql = (Update) sqlStatement;
         CommonWhereExpressionVisitor whereExpressionVisitor = new CommonWhereExpressionVisitor();
+
         // sql语句解析
         Expression expression = updateSql.getWhere();
-        whereExpressionVisitor.setExpression(expression);
-        whereExpressionVisitor.setDataReaderWriter(dataReaderWriter);
+        if (null != expression) {
+            whereExpressionVisitor.setExpression(expression);
+            whereExpressionVisitor.setDataReaderWriter(dataReaderWriter);
+        }
 
         // 将需要更新的列和值放入map中
-        Map<String, Value> updateColInfoMap = getUpdateSqlColInfo(updateSql);
+        DbfDataReaderWriter dbfDataReaderWriter = (DbfDataReaderWriter)dataReaderWriter;
+        Map<String, Value> updateColInfoMap = getUpdateSqlColInfo(updateSql,dbfDataReaderWriter.getFieldNameMap());
 
         int delRecordNum = 0;
         // 通过读取dbf文件获得对应的记录
         while (dataReaderWriter.next()) {
             log.debug("dbf 读取结果{}", dataReaderWriter.getRecordMap());
-            whereExpressionVisitor.setValueMaps(dataReaderWriter.getRecordMap());
-            // where 条件
-            expression.accept(whereExpressionVisitor);
-            Boolean filterFlag = (Boolean) whereExpressionVisitor.getResult();
+            Boolean filterFlag = true;
+            if (null != expression) {
+                whereExpressionVisitor.setValueMaps(dataReaderWriter.getRecordMap());
+                // where 条件
+                expression.accept(whereExpressionVisitor);
+                filterFlag = (Boolean) whereExpressionVisitor.getResult();
+            }
             if (filterFlag) {
                 // 将记录保存到结果集合中
                 delRecordNum++;
@@ -77,7 +85,7 @@ public class UpdateSqlRequestHandler extends AbstractSqlRequestHandler {
         try {
             Field field = Record.class.getDeclaredField("valueMap");
             field.setAccessible(true);
-            recordColInfoMap = (Map<String, Value>)field.get(curRecord);
+            recordColInfoMap = (Map<String, Value>) field.get(curRecord);
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -94,7 +102,7 @@ public class UpdateSqlRequestHandler extends AbstractSqlRequestHandler {
      * @param updateSql
      * @return
      */
-    private Map<String, Value> getUpdateSqlColInfo(Update updateSql) {
+    private Map<String, Value> getUpdateSqlColInfo(Update updateSql,Map<String,String> fieldNameMap) {
         Map<String, Value> updateColValue = Maps.newHashMap();
         List<Column> updateCols = updateSql.getColumns();
         List<Expression> updateExps = updateSql.getExpressions();
@@ -103,7 +111,8 @@ public class UpdateSqlRequestHandler extends AbstractSqlRequestHandler {
             Column col = updateCols.get(i);
             Expression exp = updateExps.get(i);
             exp.accept(commonExpVisitor);
-            updateColValue.put(col.getColumnName(), commonExpVisitor.getResult());
+            updateColValue.put(fieldNameMap.get(col.getColumnName().toUpperCase())
+                    , commonExpVisitor.getResult());
         }
         return updateColValue;
     }
